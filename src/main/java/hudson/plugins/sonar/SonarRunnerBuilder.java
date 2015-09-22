@@ -41,6 +41,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.JDK;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.sonar.utils.ExtendedArgumentListBuilder;
 import hudson.plugins.sonar.utils.Logger;
 import hudson.plugins.sonar.utils.SonarUtils;
@@ -48,6 +50,8 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -59,7 +63,7 @@ import java.util.Properties;
 /**
  * @since 1.7
  */
-public class SonarRunnerBuilder extends Builder {
+public class SonarRunnerBuilder extends Builder implements SimpleBuildStep {
 
   /**
    * Identifies {@link SonarInstallation} to be used.
@@ -186,6 +190,11 @@ public class SonarRunnerBuilder extends Builder {
       return getDescriptor().getSonarRunnerInstallations()[0];
     }
     return null;
+  }
+
+  @Override
+  public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
+    perform((AbstractBuild<?, ?>)run, launcher, (BuildListener)listener);
   }
 
   @Override
